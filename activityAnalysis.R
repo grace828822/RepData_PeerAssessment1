@@ -1,26 +1,16 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+### 1 Loading and preprocessing the data
 
-
-## Loading and preprocessing the data
-```r
 unzip("activity.zip")
 ActivityData <- read.csv("activity.csv")
 
 #Process/transform the data into a format suitable for analysis
 ActivityData$date <- as.Date(ActivityData$date)
-```
 
 
-## What is mean total number of steps taken per day?
-```r
 
-sub <- subset(ActivityData, !is.na(ActivityData[,"steps"]))
-TotalStepsPerDayTable <- aggregate(steps~date,data=sub,sum )
+### 2  What is mean total number of steps taken per day?
+ub <- subset(ActivityData, !is.na(ActivityData[,"steps"]))
+TotalStepsPerDayTable <- aggregate(steps~date,data=sub, sum) #important function
 TotalStepsPerDayTable$month <- as.numeric(format(TotalStepsPerDayTable$date, "%m"))
 
 #install.packages("ggplot2")
@@ -30,16 +20,11 @@ ggplot(TotalStepsPerDayTable, aes(date, steps))+ geom_bar(stat = "identity", col
 mean(TotalStepsPerDayTable[,"steps"])   #10766.19
 median(TotalStepsPerDayTable[,"steps"]) #10765
 
-
 dev.copy(png, file="./figure/1_TotalStepsPerDayHistogram.png", height=480, width=480)
 dev.off()
 
-```  
-![plot of chunk 1_TotalStepsPerDayHistogram](figure/1_TotalStepsPerDayHistogram.png) 
 
-
-## What is the average daily activity pattern?
-```r
+### 3 What is the average daily activity pattern?
 DailyStepsByInterval <- aggregate(steps~interval,data=sub,mean) #important function
 plot(DailyStepsByInterval$interval,DailyStepsByInterval$steps,type="l",
 	col = "slateblue3",lwd = 1.2,
@@ -59,12 +44,9 @@ legend("topright",legend = label, text.col = 'palevioletred1', bty = 'n')
 dev.copy(png, file="./figure/2_AverageStepsByInterval.png", height=480, width=480)
 dev.off()
 
-```  
-![plot of chunk 2_AverageStepsByInterval](figure/2_AverageStepsByInterval.png) 
 
 
-## Imputing missing values
-```r
+### 4 Imputing missing values
 sum(is.na(ActivityData))
 
 #fill in avg data to NA
@@ -78,25 +60,15 @@ newData$month <- as.numeric(format(newData$date, "%m"))
 
 ggplot(newData, aes(date, steps))+ geom_bar(stat = "identity", colour = "seagreen", fill = "seagreen", width = 0.7) + facet_grid(. ~ month, scales = "free") + labs(title = "Histogram of Total Number of Steps Taken Each Day", x = "Date", y = "Total number of steps")
 
-mean(newData[,"steps"])  
+mean(newData[,"steps"])   
 median(newData[,"steps"]) 
 
 dev.copy(png, file="./figure/3_TotalStepsPerDayHistogram_AfterFill-in.png", height=480, width=480)
 dev.off()
 
-```  
 
-Do these values differ from the estimates from the first part of the assignment? 
-What is the impact of imputing missing data on the estimates of the total daily number of steps?
-```r
-mean(newData[,"steps"])   #10766.19
-median(newData[,"steps"]) #10765
-```  
-![plot of chunk 3_TotalStepsPerDayHistogram_AfterFill-in](figure/3_TotalStepsPerDayHistogram_AfterFill-in.png) 
+### 5 Are there differences in activity patterns between weekdays and weekends?
 
-
-## Are there differences in activity patterns between weekdays and weekends?
-```r
 #create factor with 2 level: weekdays and weekends
 newData$weekdays <- factor(format(newData$date, "%A"))
 levels(newData$weekdays)
@@ -119,7 +91,7 @@ xyplot(meanOfSteps ~ interval | weekdays,
        xlab = "Interval", ylab = "Number of steps")
 dev.copy(png, file="./figure/4_weekdayVSweekend.png", height=480, width=480)
 dev.off()
-```  
-![plot of chunk 4_weekdayVSweekend](figure/4_weekdayVSweekend.png) 
+
+
 
 
